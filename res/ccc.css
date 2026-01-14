@@ -21,6 +21,30 @@ html, body {
 	background-color: #fff;
 }
 
+
+input[type=number],
+select,
+.underline {
+	width: 100%;
+	height: 22px;
+	display: inline;
+}
+
+input[type="number"],
+select {
+	/* All browsers round select, iOS browsers round.. a lot?  */
+	border-radius: 0;
+
+	padding: 1px 0px;
+	border: solid 1px #dcdcdc;
+	border-collapse: collapse;
+	transition: box-shadow 0.3s, border 0.3s;
+}
+input[type="number"]:focus,
+input[type="number"].focus {
+	border: solid 1px #707070;
+	box-shadow: 0 0 5px 1px #969696;
+}
 input[type=text],
 select,
 .underline {
@@ -90,6 +114,7 @@ input[type="text"].focus {
 	color: #fff;
 }
 #sc-form input[type=text],
+#sc-form input[type=number],
 #sc-form select,
 #sc-form button,
 #sc-form textarea   {

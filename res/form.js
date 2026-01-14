@@ -7,32 +7,32 @@
  */
 function syncFormFields (screenParentId, printParentId, screenPrefix) {
     var screenParent = document.getElementById(screenParentId);
-    var printParent = document.getElementById(printParentId);
+    var printParent  = document.getElementById(printParentId);
 
-    var inputs = screenParent.querySelectorAll(`input[name^=${screenPrefix}]`);
+    var inputs = screenParent.querySelectorAll(`input[name^="${screenPrefix}"]`);
     inputs.forEach(function (source) {
-        var name = source.getAttribute('name').substring(screenPrefix.length);
-        var type = source.getAttribute('type');
-        var value = source.getAttribute('value');
-        var selector = `input[type=${type}][name=${name}]`;
-        if (value !== null && type != 'number') {
-            selector = `input[type=${type}][name=${name}][value=${value}]`;
+        var name = source.name.substring(screenPrefix.length);
+        var selector;
+
+        if (source.type === 'number') {
+            selector = `input[type="text"][name="${name}"]`;
+        } else {
+            selector = `[name="${name}"]`;
         }
+
         syncElement(source, printParent, selector);
     });
 
-    var selects = screenParent.querySelectorAll(`select[name^=${screenPrefix}]`);
+    var selects = screenParent.querySelectorAll(`select[name^="${screenPrefix}"]`);
     selects.forEach(function (source) {
-        var name = source.getAttribute('name').substring(screenPrefix.length);
-        var selector = `input[type=text][name=${name}]`;
-        syncElement(source, printParent, selector);
+        var name = source.name.substring(screenPrefix.length);
+        syncElement(source, printParent, `[name="${name}"]`);
     });
 
-    var textareas = screenParent.querySelectorAll(`textarea[name^=${screenPrefix}]`);
+    var textareas = screenParent.querySelectorAll(`textarea[name^="${screenPrefix}"]`);
     textareas.forEach(function (source) {
-        var name = source.getAttribute('name').substring(screenPrefix.length);
-        var selector = `textarea[name=${name}]`;
-        syncElement(source, printParent, selector);
+        var name = source.name.substring(screenPrefix.length);
+        syncElement(source, printParent, `[name="${name}"]`);
     });
 }
 
@@ -42,24 +42,21 @@ function syncFormFields (screenParentId, printParentId, screenPrefix) {
  */
 function syncElement (source, parent, selector) {
     var target = parent.querySelector(selector);
-    if (target !== null) {
-        if (source.tagName === 'INPUT') {
-            var type = source.getAttribute('type');
-            switch (type) {
-                case 'checkbox':
-                    target.checked = source.checked;
-                    break;
-                case 'radio':
-                    target.checked = source.checked;
-                    break;
-                default:
-                    target.value = source.value;
-                    break;
-            }
-        } else {
-           target.value = source.value;
+    if (!target) {
+        console.warn(`No match for selector "${selector}"`);
+        return;
+    }
+    if (source.tagName === 'INPUT') {
+        switch (source.type) {
+            case 'checkbox':
+            case 'radio':
+                target.checked = source.checked;
+                break;
+            default:
+                target.value = source.value;
+                break;
         }
     } else {
-        console.warn(`No match for selector "${selector}"`);
+        target.value = source.value;
     }
 }
